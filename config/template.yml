@@ -1,0 +1,22 @@
+excludes:
+  - node_modules
+  - __pycache__
+  - .DS_Store
+ignore_patterns:
+  - .swpx$
+  - .swp$
+  - \~$
+  - .tmp$
+includes:
+  - \*
+watches:
+  - /Users/dir:dir:/data/dir
+watch_prefix: /Users/sichang
+executer_delay: 1
+executer_count: 10
+
+remote_host:
+remote_port: 22
+remote_user: root
+remote_pass:
+remote_pkey:

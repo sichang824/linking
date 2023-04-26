@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling","paramiko","pathlib"]
+build-backend = "hatchling.build"
+
+[project]
+name = "linking"
+version = "0.1.0"
+authors = [
+  { name="sichangzhao", email="sichangzhao@tencent.com" },
+]
+description = "A tool to sync files on macos"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/sichang824/linking.git"
+"Bug Tracker" = "https://github.com/sichang824/linking/issues"
