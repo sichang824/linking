@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 
 devcloud.yml
-
+.DS_Store
 # C extensions
 *.so
 
