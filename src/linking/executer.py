@@ -89,6 +89,14 @@ class SFTPEventHandler(BaseSFTPExecuter):
         self.excludes = excludes
         self.ignore_patterns = [re.compile(i) for i in ignore_patterns]
 
+    # @property
+    # def ssh(self):
+    #     return self.host.ssh
+
+    # @property
+    # def sftp(self):
+    #     return self.host.sftp
+
     def get_remote_path(self, path):
         return Path(
             str(path).replace(str(self.prefix[0]), str(self.prefix[1])))
@@ -165,21 +173,23 @@ class SFTPEventHandler(BaseSFTPExecuter):
                 if re.findall(p, event.native_event.path): return
                 if event.dst_event and re.findall(p, event.dst_event.path):
                     return
+        try:
+            if event.flag == MacEventFlags.CREATED:
+                self.on_created(event)
 
-        if event.flag == MacEventFlags.CREATED:
-            self.on_created(event)
+            if event.flag == MacEventFlags.DELETED:
+                self.on_deleted(event)
 
-        if event.flag == MacEventFlags.DELETED:
-            self.on_deleted(event)
+            if event.flag == MacEventFlags.RENAMED:
+                self.on_renamed(event)
 
-        if event.flag == MacEventFlags.RENAMED:
-            self.on_renamed(event)
+            if event.flag == MacEventFlags.MODIFIED:
+                self.on_modified(event)
 
-        if event.flag == MacEventFlags.MODIFIED:
-            self.on_modified(event)
+            if event.flag == MacEventFlags.ATTR_MOD:
+                self.on_attr_mod(event)
 
-        if event.flag == MacEventFlags.ATTR_MOD:
-            self.on_attr_mod(event)
-
-        if event.flag == MacEventFlags.META_MOD:
-            self.on_meta_mod(event)
+            if event.flag == MacEventFlags.META_MOD:
+                self.on_meta_mod(event)
+        except Exception as e:
+            logger.error(f"Executer handle failed: {e}")

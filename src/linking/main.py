@@ -1,5 +1,4 @@
 import daemon
-import socket
 import sys
 import time
 from pathlib import Path
@@ -21,26 +20,13 @@ class MSyncConf(YamlConfManager):
 c = MSyncConf("config/devcloud.yml")
 
 
-def telnet(host, port):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.connect((host, int(port)))
-        s.settimeout(1)
-        s.shutdown(2)
-        return 1
-    except Exception as e:
-        logger.log(f'{port} is down')
-        return 0
-
-
 def main():
     obs = MacFSEventsObserver()
     host = RemoteHost(c.remote_host,
                       c.remote_user,
                       port=c.remote_port,
                       pkey=c.remote_pkey)
-    host.initial()
-
+    host.connect()
     for watch in c.watches:
         l_prefix, ld, r_prefix = watch.split(":")
         l_prefix = Path(l_prefix)
@@ -57,11 +43,18 @@ def main():
 
     try:
         while True:
-            if not host.check_connectivity():
-                host.close()
-            if not host.connected and not host.initial():
-                logger.error(f"Remote host connect failed: {host}")
-            time.sleep(1)
+            if not host.connected:
+                try:
+                    host.connect()
+                except Exception as e:
+                    logger.error(f"Remote {host} connect failed: {e}")
+
+            try:
+                host.check_connectivity()
+            except Exception as e:
+                logger.error(f"Remote {host} connect no connectivity: {e}")
+
+            time.sleep(60)
     except KeyboardInterrupt:
         obs.stop()
         obs.join()
