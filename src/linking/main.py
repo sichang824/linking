@@ -41,31 +41,24 @@ def main():
 
     obs.start()
 
-    try:
-        while True:
-            if not host.connected:
-                try:
-                    host.connect()
-                except Exception as e:
-                    logger.error(f"Remote {host} connect failed: {e}")
+    while host.check_connectivity():
+        time.sleep(1)
 
-            try:
-                host.check_connectivity()
-            except Exception as e:
-                logger.error(f"Remote {host} connect no connectivity: {e}")
-
-            time.sleep(60)
-    except KeyboardInterrupt:
-        obs.stop()
-        obs.join()
-        sys.exit()
+    obs.stop()
+    obs.join()
+    host.close()
 
 
 def run_daemon():
     normal = open('/Users/sichang/log/msync.log', "w+")
     error = open('/Users/sichang/log/msync.error.log', "w+")
     with daemon.DaemonContext(stderr=normal, stdout=error):
-        main()
+        while True:
+            time.sleep(5)
+            try:
+                main()
+            except KeyboardInterrupt:
+                break
 
 
 if __name__ == "__main__":
